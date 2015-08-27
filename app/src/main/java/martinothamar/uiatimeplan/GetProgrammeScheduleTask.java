@@ -2,13 +2,14 @@ package martinothamar.uiatimeplan;
 
 import android.os.AsyncTask;
 
+import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
 
-public class GetProgrammeSchedule extends AsyncTask<String, Void, String> {
+public class GetProgrammeScheduleTask extends AsyncTask<String, Void, Document> {
 
     @Override
-    protected String doInBackground(String... params) {
+    protected Document doInBackground(String... params) {
         Element __EVENTARGUMENT = MainActivity.schedulePage.select("input[id=__EVENTARGUMENT]").first();
         Element __EVENTTARGET = MainActivity.schedulePage.select("input[id=__EVENTTARGET]").first();
         Element __LASTFOCUS = MainActivity.schedulePage.select("input[id=__LASTFOCUS]").first();

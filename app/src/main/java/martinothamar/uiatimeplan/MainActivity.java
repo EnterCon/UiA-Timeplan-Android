@@ -1,5 +1,7 @@
 package martinothamar.uiatimeplan;
 
+import android.content.Context;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -12,6 +14,8 @@ import android.widget.TextView;
 
 import org.jsoup.nodes.Document;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -82,6 +86,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View view) {
         TextView selectedIndex = (TextView) view;
         programmes.setSelection(mapIndex.get(selectedIndex.getText()));
+
+        // Get Schedule for programme and save it to JSON
+
+        Intent intent = new Intent(this, ScheduleActivity.class);
+        startActivity(intent);
+    }
+
+    public void saveFile(String data, String filename) {
+        Context context = this;
+        File file = new File(context.getFilesDir(), filename);
+        FileOutputStream outputStream;
+
+        try {
+            outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
+            outputStream.write(data.getBytes());
+            outputStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void readFile(String filename) {
+        Context context = this;
+        String filePath = context.getFilesDir() + "/" + filename;
+        File file = new File( filePath );
     }
 
 
