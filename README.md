@@ -7,5 +7,5 @@ blitt gjort.
 # Roadmap
 TBC
 
-# LICENSE
+# Lisens
 MIT © Martin Othamar
