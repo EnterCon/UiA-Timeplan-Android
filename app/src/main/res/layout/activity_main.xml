@@ -1,0 +1,29 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:paddingLeft="5dp"
+    tools:context=".MainActivity"
+    android:baselineAligned="false" >
+
+    <ListView
+        android:id="@+id/programmes"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:paddingRight="5dp" >
+    </ListView>
+
+    <LinearLayout
+        android:id="@+id/side_index"
+        android:layout_width="50dp"
+        android:layout_height="fill_parent"
+        android:background="#c3c3c3"
+        android:gravity="center_horizontal"
+        android:orientation="vertical" >
+    </LinearLayout>
+
+
+
+</LinearLayout>
