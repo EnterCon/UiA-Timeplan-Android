@@ -1,5 +1,6 @@
 package martinothamar.uiatimeplan;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -24,7 +25,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends Activity implements View.OnClickListener {
     public static Document schedulePage;
     public static HashMap<String, String> programmesMap; // The name of the programme and it's select-box ID
     public static Map<String, Integer> mapIndex; // The first letter of the programme name and it's index in the ListView

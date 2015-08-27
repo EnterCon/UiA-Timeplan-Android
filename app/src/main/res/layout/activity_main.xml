@@ -17,9 +17,9 @@
 
     <LinearLayout
         android:id="@+id/side_index"
-        android:layout_width="50dp"
+        android:layout_width="35dp"
         android:layout_height="fill_parent"
-        android:background="#c3c3c3"
+        android:background="#A60C30"
         android:gravity="center_horizontal"
         android:orientation="vertical" >
     </LinearLayout>
