@@ -8,12 +8,14 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -24,6 +26,9 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import martinothamar.uiatimeplan.Models.PostData;
+import martinothamar.uiatimeplan.Models.Programme;
 
 public class MainActivity extends Activity implements View.OnClickListener {
     public static Document schedulePage;
@@ -55,6 +60,39 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
         getIndexList(programmeListData);
         displayIndex();
+
+
+        programmes.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String programmeName = (String)parent.getItemAtPosition(position);
+                String programmeCode = programmesMap.get(programmeName);
+                PostData requestData = getSchedulePostData(programmeCode);
+                Programme programme = new Programme(programmeCode);
+                programme.scrapeSchedule(requestData);
+                Intent intent = new Intent(MainActivity.this, ScheduleActivity.class);
+                startActivity(intent);
+            }
+        });
+    }
+
+
+    private PostData getSchedulePostData(String programmeCode) {
+        Element __EVENTTARGET = schedulePage.select("input[id=__EVENTTARGET]").first();
+        Element __EVENTARGUMENT = schedulePage.select("input[id=__EVENTARGUMENT]").first();
+        Element __LASTFOCUS = schedulePage.select("input[id=__LASTFOCUS]").first();
+        Element __VIEWSTATE = schedulePage.select("input[id=__VIEWSTATE]").first();
+        Element __VIEWSTATEGENERATOR = schedulePage.select("input[id=__VIEWSTATEGENERATOR]").first();
+        Element __EVENTVALIDATION = schedulePage.select("input[id=__EVENTVALIDATION]").first();
+        Element tLinkType = schedulePage.select("input[id=tLinkType]").first();
+        Element tWildcard = schedulePage.select("input[id=tWildcard]").first();
+        Element lbWeeks = schedulePage.select("select[name=lbWeeks]option[selected=selected]").first();
+        Element lbDays = schedulePage.select("select[name=lbDays]option[selected=selected]").first();
+        Element RadioType = schedulePage.select("input[type=radio][name=RadioType][checked=checked]").first();
+        Element bGetTimetable = schedulePage.select("input[id=bGetTimetable]").first();
+        return new PostData(__EVENTTARGET.val(), __EVENTARGUMENT.val(), __LASTFOCUS.val(), __VIEWSTATE.val(),
+                __VIEWSTATEGENERATOR.val(), __EVENTVALIDATION.val(), tLinkType.val(), tWildcard.val(), lbWeeks.val(),
+                lbDays.val(), RadioType.val(), bGetTimetable.val(), programmeCode);
     }
 
 
@@ -87,11 +125,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
     public void onClick(View view) {
         TextView selectedIndex = (TextView) view;
         programmes.setSelection(mapIndex.get(selectedIndex.getText()));
-
-        // Get Schedule for programme and save it to JSON
-
-        Intent intent = new Intent(this, ScheduleActivity.class);
-        startActivity(intent);
     }
 
     public void saveFile(String data, String filename) {

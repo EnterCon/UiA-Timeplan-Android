@@ -1,11 +1,13 @@
 package martinothamar.uiatimeplan;
 
+import android.app.Activity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class ScheduleActivity extends AppCompatActivity {
+public class ScheduleActivity extends Activity {
+    public static String scheduleData = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

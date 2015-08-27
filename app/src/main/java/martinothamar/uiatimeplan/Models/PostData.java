@@ -16,9 +16,29 @@ public class PostData {
     public String lbDays;
     public String RadioType;
     public String bGetTimetable;
+    public String programmeCode;
+
 
     public PostData() {
+    }
 
+    public PostData(String __EVENTTARGET, String __EVENTARGUMENT, String __LASTFOCUS,
+                    String __VIEWSTATE, String __VIEWSTATEGENERATOR, String __EVENTVALIDATION,
+                    String tLinkType, String tWildcard, String lbWeeks,
+                    String lbDays, String RadioType, String bGetTimetable, String programmeCode) {
+        this.set__EVENTTARGET(__EVENTTARGET);
+        this.set__EVENTARGUMENT(__EVENTARGUMENT);
+        this.set__LASTFOCUS(__LASTFOCUS);
+        this.set__VIEWSTATE(__VIEWSTATE);
+        this.set__VIEWSTATEGENERATOR(__VIEWSTATEGENERATOR);
+        this.set__EVENTVALIDATION(__EVENTVALIDATION);
+        this.settLinkType(tLinkType);
+        this.settWildcard(tWildcard);
+        this.setLbWeeks(lbWeeks);
+        this.setLbDays(lbDays);
+        this.setRadioType(RadioType);
+        this.setbGetTimetable(bGetTimetable);
+        this.setProgrammeCode(programmeCode);
     }
 
 
@@ -120,5 +140,13 @@ public class PostData {
 
     public void setbGetTimetable(String bGetTimetable) {
         this.bGetTimetable = bGetTimetable;
+    }
+
+    public String getProgrammeCode() {
+        return programmeCode;
+    }
+
+    public void setProgrammeCode(String programmeCode) {
+        this.programmeCode = programmeCode;
     }
 }
