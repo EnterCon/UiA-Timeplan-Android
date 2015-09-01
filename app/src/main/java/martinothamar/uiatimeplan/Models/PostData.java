@@ -16,7 +16,7 @@ public class PostData {
     public String lbDays;
     public String RadioType;
     public String bGetTimetable;
-    public String programmeCode;
+    public String dlObject;
 
 
     public PostData() {
@@ -38,7 +38,7 @@ public class PostData {
         this.setLbDays(lbDays);
         this.setRadioType(RadioType);
         this.setbGetTimetable(bGetTimetable);
-        this.setProgrammeCode(programmeCode);
+        this.setDlObject(programmeCode);
     }
 
 
@@ -142,11 +142,11 @@ public class PostData {
         this.bGetTimetable = bGetTimetable;
     }
 
-    public String getProgrammeCode() {
-        return programmeCode;
+    public String getDlObject() {
+        return dlObject;
     }
 
-    public void setProgrammeCode(String programmeCode) {
-        this.programmeCode = programmeCode;
+    public void setDlObject(String dlObject) {
+        this.dlObject = dlObject;
     }
 }

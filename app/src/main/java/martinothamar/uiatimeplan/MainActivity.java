@@ -3,7 +3,6 @@ package martinothamar.uiatimeplan;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -35,6 +34,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
     public static HashMap<String, String> programmesMap; // The name of the programme and it's select-box ID
     public static Map<String, Integer> mapIndex; // The first letter of the programme name and it's index in the ListView
     public static ListView programmes; // The View component
+    public static Programme activeProgramme;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +42,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         setContentView(R.layout.activity_main);
 
         try {
-            URL url = Utilities.getSemesterURL();
+            URL url = Util.getSemesterURL();
             programmesMap = new GetProgrammesTask().execute(url).get();
         } catch(Exception ex) {
 
@@ -71,28 +71,37 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 Programme programme = new Programme(programmeCode);
                 programme.scrapeSchedule(requestData);
                 Intent intent = new Intent(MainActivity.this, ScheduleActivity.class);
-                startActivity(intent);
+                intent.putExtra("activeProgramme", programme);
+                try {
+                    startActivity(intent);
+                } catch (Exception ex) {
+                    System.out.print(ex.getMessage());
+                }
             }
         });
     }
 
 
     private PostData getSchedulePostData(String programmeCode) {
-        Element __EVENTTARGET = schedulePage.select("input[id=__EVENTTARGET]").first();
-        Element __EVENTARGUMENT = schedulePage.select("input[id=__EVENTARGUMENT]").first();
-        Element __LASTFOCUS = schedulePage.select("input[id=__LASTFOCUS]").first();
-        Element __VIEWSTATE = schedulePage.select("input[id=__VIEWSTATE]").first();
-        Element __VIEWSTATEGENERATOR = schedulePage.select("input[id=__VIEWSTATEGENERATOR]").first();
-        Element __EVENTVALIDATION = schedulePage.select("input[id=__EVENTVALIDATION]").first();
-        Element tLinkType = schedulePage.select("input[id=tLinkType]").first();
-        Element tWildcard = schedulePage.select("input[id=tWildcard]").first();
-        Element lbWeeks = schedulePage.select("select[name=lbWeeks]option[selected=selected]").first();
-        Element lbDays = schedulePage.select("select[name=lbDays]option[selected=selected]").first();
-        Element RadioType = schedulePage.select("input[type=radio][name=RadioType][checked=checked]").first();
-        Element bGetTimetable = schedulePage.select("input[id=bGetTimetable]").first();
-        return new PostData(__EVENTTARGET.val(), __EVENTARGUMENT.val(), __LASTFOCUS.val(), __VIEWSTATE.val(),
-                __VIEWSTATEGENERATOR.val(), __EVENTVALIDATION.val(), tLinkType.val(), tWildcard.val(), lbWeeks.val(),
-                lbDays.val(), RadioType.val(), bGetTimetable.val(), programmeCode);
+        try {
+            String __EVENTTARGET = schedulePage.select("input[id=__EVENTTARGET]").first().val();
+            String __EVENTARGUMENT = schedulePage.select("input[id=__EVENTARGUMENT]").first().val();
+            String __LASTFOCUS = schedulePage.select("input[id=__LASTFOCUS]").first().val();
+            String __VIEWSTATE = schedulePage.select("input[id=__VIEWSTATE]").first().val();
+            String __VIEWSTATEGENERATOR = schedulePage.select("input[id=__VIEWSTATEGENERATOR]").first().val();
+            String __EVENTVALIDATION = schedulePage.select("input[id=__EVENTVALIDATION]").first().val();
+            String tLinkType = schedulePage.select("input[id=tLinkType]").first().val();
+            String tWildcard = schedulePage.select("input[id=tWildcard]").first().val();
+            String lbWeeks = schedulePage.select("select[name=lbWeeks] option[selected=selected]").first().val();
+            String lbDays = schedulePage.select("select[name=lbDays] option[selected=selected]").first().val();
+            String RadioType = schedulePage.select("input[type=radio][name=RadioType][checked=checked]").first().val();
+            String bGetTimetable = schedulePage.select("input[id=bGetTimetable]").first().val();
+            return new PostData(__EVENTTARGET, __EVENTARGUMENT, __LASTFOCUS, __VIEWSTATE,
+                    __VIEWSTATEGENERATOR, __EVENTVALIDATION, tLinkType, tWildcard, lbWeeks,
+                    lbDays, RadioType, bGetTimetable, programmeCode);
+        } catch(Exception ex) {
+            throw new IllegalArgumentException("Couldn't get post data!");
+        }
     }
 
 

@@ -1,10 +1,11 @@
 package martinothamar.uiatimeplan.Models;
 
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-public class Day {
+public class Day implements Serializable {
     public Calendar date;
     public String dayOfWeek;
     public ArrayList<Activity> activities;

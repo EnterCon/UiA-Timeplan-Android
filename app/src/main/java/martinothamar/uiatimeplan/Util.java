@@ -3,11 +3,13 @@ package martinothamar.uiatimeplan;
 import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 
 
-public class Utilities {
+public class Util {
 
     public static String convertStreamToString(InputStream is) {
         java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
@@ -38,5 +40,22 @@ public class Utilities {
         } catch(Exception ex) {
             return null;
         }
+    }
+
+    public static String sanitize(String str)
+    {
+        StringBuilder res = new StringBuilder();
+        Character[] escapeSequences = new Character[]{'\r', '\n', '\t', '\\', '\f', '\b', '\n', '\'', '\"'};
+        for (int i = 0; i < str.length(); i++)
+        {
+            if (Arrays.asList(escapeSequences).contains(str.charAt(i)))
+                continue;
+            if (i == 0 && str.charAt(i) == ' ')
+                continue;
+            if (i != 0 && str.charAt(i) == ' ' && str.charAt(i - 1) == ' ')
+                continue;
+            res.append(str.charAt(i));
+        }
+        return res.toString().trim();
     }
 }

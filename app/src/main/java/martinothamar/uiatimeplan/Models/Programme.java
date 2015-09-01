@@ -1,21 +1,20 @@
 package martinothamar.uiatimeplan.Models;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.Reader;
-import java.lang.reflect.Field;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLEncoder;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.Locale;
 
-import martinothamar.uiatimeplan.MainActivity;
-import martinothamar.uiatimeplan.Utilities;
+import martinothamar.uiatimeplan.GetProgrammeScheduleTask;
+import martinothamar.uiatimeplan.Util;
 
 
-public class Programme {
+public class Programme implements Serializable {
     public String id;
     public String name;
     public ArrayList<Week> schedule;
@@ -30,36 +29,58 @@ public class Programme {
     }
 
 
-    public String scrapeSchedule(PostData requestData) {
+    public void scrapeSchedule(PostData requestData) {
         try {
-            URLConnection connection = Utilities.getSemesterURL().openConnection();
-            connection.setDoOutput(true); // Triggers POST.
-            connection.setRequestProperty("Accept-Charset", "UTF-8");
-            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8");
+            Document html = new GetProgrammeScheduleTask().execute(requestData).get();
+            String title = html.select(".title").first().text();
+            this.name = Util.sanitize(title);
 
-            StringBuilder postData = new StringBuilder();
-            for (Field param : requestData.getClass().getFields()) {
-                if (postData.length() != 0) postData.append('&');
-                postData.append(URLEncoder.encode(param.getName(), "UTF-8"));
-                postData.append('=');
-                postData.append(URLEncoder.encode((String)param.get(requestData), "UTF-8"));
+            Elements weeks = html.select("table");
+            for(Element week : weeks) {
+                Elements days = week.select("tr.tr2");
+                if(days != null && days.size() > 0) {
+                    Week theWeek = new Week();
+                    ArrayList<Day> dayList = new ArrayList<Day>();
+                    String weekString = Util.sanitize(week.select("td.td1").first().text());
+                    theWeek.parseWeekNumber(weekString);
+                    theWeek.parseYear(weekString);
+                    for(Element dayActivity : days) {
+                        Activity activity = new Activity();
+                        activity.parseCourses(Util.sanitize(dayActivity.child(3).text()));
+                        activity.parseRooms(Util.sanitize(dayActivity.child(4).text()));
+                        activity.lecturer = Util.sanitize(dayActivity.child(5).text());
+                        activity.notice = Util.sanitize(dayActivity.child(6).text());
+                        String dateStr = Util.sanitize(dayActivity.child(1).text());
+                        String timeStr = Util.sanitize(dayActivity.child(2).text());
+                        activity.parseTimespan(theWeek.year, dateStr, timeStr);
+                        ArrayList<Day> exists = new ArrayList<Day>();
+                        for(Day d : dayList) {
+                            if(d.date.get(Calendar.DATE) == activity.start.get(Calendar.DATE)) {
+                                exists.add(d);
+                            }
+                        }
+                        if(exists.size() == 0) {
+                            Day aday = new Day();
+                            aday.activities.add(activity);
+                            aday.date = new GregorianCalendar
+                                    (activity.start.get(Calendar.YEAR),
+                                    activity.start.get(Calendar.MONTH),
+                                    activity.start.get(Calendar.DAY_OF_MONTH));
+                            aday.dayOfWeek = activity.start.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.ENGLISH);
+                            dayList.add(aday);
+                        }
+                        else if (exists.size() > 0){
+                            exists.get(0).activities.add(activity);
+                        }
+                    }
+
+                    theWeek.days.addAll(dayList);
+                    this.schedule.add(theWeek);
+                }
             }
-            byte[] postDataBytes = postData.toString().getBytes("UTF-8");
-
-            connection.setRequestProperty("Content-Length", String.valueOf(postDataBytes.length));
-            connection.getOutputStream().write(postDataBytes);
-
-            InputStream response = connection.getInputStream();
-            Reader in = new BufferedReader(new InputStreamReader(connection.getInputStream(), "UTF-8"));
-
-            StringBuilder result = new StringBuilder();
-            for ( int c = in.read(); c != -1; c = in.read() )
-                result.append((char)c);
-            return result.toString();
         } catch(Exception ex) {
-
+            throw new IllegalArgumentException("scrapeSchedule: " + ex.getMessage());
         }
-        return null;
     }
 
 

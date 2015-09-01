@@ -1,9 +1,12 @@
 package martinothamar.uiatimeplan.Models;
 
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-public class Week {
+public class Week implements Serializable {
     public int weekNumber;
     public int year;
     public ArrayList<Day> days;
@@ -13,12 +16,40 @@ public class Week {
     }
 
 
-    public static int getWeekNumber(String stringContainingWeekNumber) {
-        return 0;
+    public void parseWeekNumber(String stringContainingWeekNumber) {
+        Pattern pattern = Pattern.compile("(?<=Uke.{0,10})\\b([0-9]|[1-4][0-9]|5[0-2])\\b", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(stringContainingWeekNumber);
+        int count = 0;
+        int weekNumber = 0;
+        while(matcher.find()) {
+            if(count > 1) {
+                throw new IllegalArgumentException("getWeekNumber: found more than 1 matches");
+            }
+            weekNumber = Integer.parseInt(matcher.group());
+            count++;
+        }
+        if(weekNumber == 0) {
+            throw new IllegalArgumentException("getWeekNumber: found no matches in string");
+        }
+        this.weekNumber = weekNumber;
     }
 
-    public static int getYear(String stringContainingYear) {
-        return 0;
+    public void parseYear(String stringContainingYear) {
+        Pattern pattern = Pattern.compile("(20)\\d{2}", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(stringContainingYear);
+        int count = 0;
+        int year = 0;
+        while(matcher.find()) {
+            if(count > 1) {
+                throw new IllegalArgumentException("parseYear: found more than 1 matches");
+            }
+            year = Integer.parseInt(matcher.group());
+            count++;
+        }
+        if(year == 0) {
+            throw new IllegalArgumentException("parseYear: found no matches in string");
+        }
+        this.year = year;
     }
 
 
