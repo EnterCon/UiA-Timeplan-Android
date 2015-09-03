@@ -66,25 +66,29 @@ public class ScheduleActivity extends Activity implements WeekView.MonthChangeLi
 
 
     @Override
-    public List<WeekViewEvent> onMonthChange(int i, int i1) {
+    public List<WeekViewEvent> onMonthChange(int newYear, int newMonth) {
         List<WeekViewEvent> events = new ArrayList<WeekViewEvent>();
         for (Week week : activeProgramme.getSchedule()){
             for(Day day : week.days) {
                 for(martinothamar.uiatimeplan.Models.Activity activity : day.activities) {
-                    WeekViewEvent event = new WeekViewEvent(1, getEventTitle(activity), activity.getStart(), activity.getEnd());
-                    event.setColor(getResources().getColor(R.color.primary_light, this.getTheme()));
-                    events.add(event);
+                    int actYear = activity.getStart().get(Calendar.YEAR);
+                    int actMonth = activity.getStart().get(Calendar.MONTH);
+                    if(actYear == newYear && actMonth == newMonth - 1)
+                    {
+                        WeekViewEvent event = new WeekViewEvent(1, getEventTitle(activity), activity.getStart(), activity.getEnd());
+                        event.setColor(getResources().getColor(R.color.primary_dark));
+                        events.add(event);
+                    }
                 }
             }
         }
+
         return events;
     }
 
 
     private String getEventTitle(martinothamar.uiatimeplan.Models.Activity activity) {
-        return String.format(activity.getCourses().get(0) + " %02d:%02d til %02d:%02d",
-                activity.start.get(Calendar.HOUR_OF_DAY), activity.end.get(Calendar.MINUTE),
-                activity.end.get(Calendar.HOUR_OF_DAY), activity.end.get(Calendar.MINUTE));
+        return activity.getCourses().get(0) + " i " + activity.getRooms().get(0);
     }
 
 
