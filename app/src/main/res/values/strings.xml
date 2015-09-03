@@ -2,7 +2,7 @@
     <string name="app_name">UiA Timeplan</string>
     <string name="action_settings">Instillinger</string>
     <string name="title_activity_schedule">Timeplan</string>
-    <string name="action_today">I dag</string>
+    <string name="action_today">Gå til i dag</string>
     <string name="action_day_view">1 dag</string>
     <string name="action_three_day_view">3 dager</string>
     <string name="action_week_view">7 dager</string>

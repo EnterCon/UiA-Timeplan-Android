@@ -17,10 +17,12 @@ import com.alamkanak.weekview.DateTimeInterpreter;
 import com.alamkanak.weekview.WeekView;
 import com.alamkanak.weekview.WeekViewEvent;
 
+import java.lang.reflect.Array;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -76,7 +78,7 @@ public class ScheduleActivity extends Activity implements WeekView.MonthChangeLi
                     if(actYear == newYear && actMonth == newMonth - 1)
                     {
                         WeekViewEvent event = new WeekViewEvent(1, getEventTitle(activity), activity.getStart(), activity.getEnd());
-                        event.setColor(getResources().getColor(R.color.primary_dark));
+                        event.setColor(getResources().getColor(R.color.uia_blue));
                         events.add(event);
                     }
                 }
@@ -88,7 +90,13 @@ public class ScheduleActivity extends Activity implements WeekView.MonthChangeLi
 
 
     private String getEventTitle(martinothamar.uiatimeplan.Models.Activity activity) {
-        return activity.getCourses().get(0) + " i " + activity.getRooms().get(0);
+        String title = "";
+        for(String course : activity.getCourses())
+            title += course + " ";
+        title += "i rom ";
+        for(String room : activity.getRooms())
+            title += room + " ";
+        return title;
     }
 
 
@@ -116,6 +124,29 @@ public class ScheduleActivity extends Activity implements WeekView.MonthChangeLi
                 SimpleDateFormat weekdayNameFormat = new SimpleDateFormat("EEE", Locale.getDefault());
                 String weekday = weekdayNameFormat.format(date.getTime());
                 SimpleDateFormat format = new SimpleDateFormat(" dd.MM", Locale.getDefault());
+                switch(weekday) {
+                    case "Mon":
+                        weekday = "Man.";
+                        break;
+                    case "Tue":
+                        weekday = "Tir.";
+                        break;
+                    case "Wed":
+                        weekday = "Ons.";
+                        break;
+                    case "Thu":
+                        weekday = "Tor.";
+                        break;
+                    case "Fri":
+                        weekday = "Fre.";
+                        break;
+                    case "Sat":
+                        weekday = "Lør.";
+                        break;
+                    case "Sun":
+                        weekday = "Søn.";
+                        break;
+                }
 
                 // All android api level do not have a standard way of getting the first letter of
                 // the week day name. Hence we get the first char programmatically.
@@ -127,7 +158,7 @@ public class ScheduleActivity extends Activity implements WeekView.MonthChangeLi
 
             @Override
             public String interpretTime(int hour) {
-                return Integer.toString(hour);
+                return Integer.toString(hour) + ":00";
             }
         });
     }

@@ -16,11 +16,14 @@
         app:headerColumnPadding="8dp"
         app:headerColumnTextColor="#fff"
         app:headerRowPadding="12dp"
-        app:columnGap="5dp"
+        app:columnGap="2dp"
         app:noOfVisibleDays="3"
-        app:headerRowBackgroundColor="@color/primary_dark"
+        app:headerRowBackgroundColor="@color/uia_red_dark"
         app:dayBackgroundColor="#fff"
         app:todayBackgroundColor="#fff"
-        app:headerColumnBackground="@color/primary_dark"
-        app:todayHeaderTextColor="#fff"/>
+        app:headerColumnBackground="@color/uia_red_dark"
+        app:todayHeaderTextColor="#fff"
+        app:overlappingEventGap="2dp"
+        app:hourSeparatorColor="@color/uia_blue"
+    />
 </RelativeLayout>
