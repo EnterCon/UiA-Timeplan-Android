@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "martinothamar.uiatimeplan"
-        minSdkVersion 15
+        minSdkVersion 16
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
@@ -26,4 +26,5 @@ dependencies {
     compile 'com.github.alamkanak:android-week-view:1.2.3'
     compile 'com.android.support:support-v4:23.0.0'
     compile 'com.skyfishjy.ripplebackground:library:1.0.1'
+    compile 'com.facebook.shimmer:shimmer:0.1.0@aar'
 }
