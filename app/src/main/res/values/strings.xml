@@ -6,4 +6,8 @@
     <string name="action_day_view">1 dag</string>
     <string name="action_three_day_view">3 dager</string>
     <string name="action_week_view">7 dager</string>
+
+    <string name="title_activity_start">StartActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
 </resources>
