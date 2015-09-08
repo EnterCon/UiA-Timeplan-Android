@@ -12,19 +12,32 @@ import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
 import martinothamar.uiatimeplan.Models.PostData;
 import martinothamar.uiatimeplan.Models.Programme;
@@ -34,7 +47,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
     public static HashMap<String, String> programmesMap; // The name of the programme and it's select-box ID
     public static Map<String, Integer> mapIndex; // The first letter of the programme name and it's index in the ListView
     public static ListView programmes; // The View component
-    public static Programme activeProgramme;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,11 +77,33 @@ public class MainActivity extends Activity implements View.OnClickListener {
         programmes.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Context context = getApplicationContext();
+                int duration = Toast.LENGTH_LONG;
+                CharSequence text = "";
+
                 String programmeName = (String)parent.getItemAtPosition(position);
                 String programmeCode = programmesMap.get(programmeName);
-                PostData requestData = getSchedulePostData(programmeCode);
-                Programme programme = new Programme(programmeCode);
-                programme.scrapeSchedule(requestData);
+
+                Programme programme = null;
+                File f = new File(getFilesDir() + "/"+programmeCode+".ser");
+                Date lastModified = new Date(f.lastModified());
+                Date currentDate = new Date(System.currentTimeMillis());
+
+                if (f.exists() == true && (System.currentTimeMillis() - f.lastModified()) / (1000*60*60*24) < 14 ){
+                    text = "Henter lagret timeplan..";
+                    Toast toast = Toast.makeText(context, text, duration);
+                    toast.show();
+                    programme = readFile(programmeCode);
+                } else {
+                    text = "Lagrer timeplan..";
+                    Toast toast = Toast.makeText(context, text, duration);
+                    toast.show();
+                    PostData requestData = getSchedulePostData(programmeCode);
+                    programme = new Programme(programmeCode);
+                    programme.scrapeSchedule(requestData);
+                    saveFile(programme);
+                }
+
                 Intent intent = new Intent(MainActivity.this, ScheduleActivity.class);
                 intent.putExtra("activeProgramme", programme);
                 try {
@@ -136,24 +170,46 @@ public class MainActivity extends Activity implements View.OnClickListener {
         programmes.setSelection(mapIndex.get(selectedIndex.getText()));
     }
 
-    public void saveFile(String data, String filename) {
-        Context context = this;
-        File file = new File(context.getFilesDir(), filename);
-        FileOutputStream outputStream;
-
-        try {
-            outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
-            outputStream.write(data.getBytes());
-            outputStream.close();
-        } catch (Exception e) {
-            e.printStackTrace();
+    public void saveFile(Programme programme) {
+        try{
+            //use buffering
+            OutputStream file = new FileOutputStream(getFilesDir() + "/"+ programme.getId() +".ser");
+            OutputStream buffer = new BufferedOutputStream(file);
+            ObjectOutput output = new ObjectOutputStream(buffer);
+            try{
+                output.writeObject(programme);
+            }
+            finally{
+                output.close();
+            }
+        }
+        catch(IOException ex){
+            System.out.println("SaveFile: " + ex.getMessage());
         }
     }
 
-    public void readFile(String filename) {
-        Context context = this;
-        String filePath = context.getFilesDir() + "/" + filename;
-        File file = new File( filePath );
+    public Programme readFile(String programmeCode) {
+        Programme programme = null;
+        try{
+            //use buffering
+            InputStream file = new FileInputStream(getFilesDir() + "/"+ programmeCode +".ser");
+            InputStream buffer = new BufferedInputStream(file);
+            ObjectInput input = new ObjectInputStream(buffer);
+            try{
+                //deserialize the List
+                programme = (Programme)input.readObject();
+            }
+            finally{
+                input.close();
+            }
+        }
+        catch(ClassNotFoundException ex){
+            System.out.println("ReadFile: " + ex.getMessage());
+        }
+        catch(IOException ex){
+            System.out.println("ReadFile: " + ex.getMessage());
+        }
+        return programme;
     }
 
 
