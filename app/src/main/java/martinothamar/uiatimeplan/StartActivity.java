@@ -17,15 +17,9 @@ import android.widget.ImageView;
 
 import com.skyfishjy.library.RippleBackground;
 
-/**
- * An example full-screen activity that shows and hides the system UI (i.e.
- * status bar and navigation/system bar) with user interaction.
- *
- * @see SystemUiHider
- */
+
+
 public class StartActivity extends Activity {
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +32,7 @@ public class StartActivity extends Activity {
 
         final RippleBackground rippleBackground=(RippleBackground)findViewById(R.id.content);
         rippleBackground.startRippleAnimation();
+
 
         new CountDownTimer(3000, 1000) {
 
@@ -54,6 +49,21 @@ public class StartActivity extends Activity {
             }
 
         }.start();
+
+
+        ImageView imageView=(ImageView)findViewById(R.id.centerImage);
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                rippleBackground.stopRippleAnimation();
+                Intent intent = new Intent(StartActivity.this, MainActivity.class);
+                try {
+                    startActivity(intent);
+                } catch (Exception ex) {
+                    System.out.print(ex.getMessage());
+                }
+            }
+        });
     }
 
 
