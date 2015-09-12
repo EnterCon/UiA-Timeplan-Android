@@ -47,16 +47,10 @@ public class ScheduleActivity extends Activity implements WeekView.MonthChangeLi
         this.activeProgramme = (Programme)intent.getSerializableExtra("activeProgramme");
         // Get a reference for the week view in the layout.
         mWeekView = (WeekView) findViewById(R.id.weekView);
-
-        // Show a toast message about the touched event.
         mWeekView.setOnEventClickListener(this);
-
-        // The week view has infinite scrolling horizontally. We have to provide the events of a
-        // month every time the month changes on the week view.
         mWeekView.setMonthChangeListener(this);
-
-        // Set long press listener for events.
         mWeekView.setEventLongPressListener(this);
+        mWeekView.goToHour(8);
 
 
         // Set up a date time interpreter to interpret how the date and time will be formatted in
@@ -93,9 +87,10 @@ public class ScheduleActivity extends Activity implements WeekView.MonthChangeLi
         String title = "";
         for(String course : activity.getCourses())
             title += course + " ";
-        title += "i rom ";
+        title += "\ni rom\n";
         for(String room : activity.getRooms())
             title += room + " ";
+        title += "\nmed\n" + activity.getLecturer();
         return title;
     }
 
