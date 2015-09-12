@@ -54,10 +54,18 @@ public class MainActivity extends Activity implements View.OnClickListener {
         setContentView(R.layout.activity_main);
 
         try {
-            URL url = Util.getSemesterURL();
-            programmesMap = new GetProgrammesTask().execute(url).get();
+            if(new CheckNetworkTask().execute().get()) {
+                URL url = Util.getSemesterURL();
+                programmesMap = new GetProgrammesTask().execute(url).get();
+                saveProgrammeMap(programmesMap);
+            } else {
+                programmesMap = readProgrammeMap();
+                if(programmesMap == null) throw new RuntimeException("Some shit happened!");
+            }
         } catch(Exception ex) {
-
+            Toast toast = Toast.makeText(getApplicationContext(), "Noe gikk galt, sorry", Toast.LENGTH_LONG);
+            toast.show();
+            return;
         }
 
         ArrayList<String> programmeListData = new ArrayList<String>();
@@ -77,39 +85,44 @@ public class MainActivity extends Activity implements View.OnClickListener {
         programmes.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Context context = getApplicationContext();
-                int duration = Toast.LENGTH_LONG;
-                CharSequence text = "";
-
                 String programmeName = (String)parent.getItemAtPosition(position);
                 String programmeCode = programmesMap.get(programmeName);
 
                 Programme programme = null;
                 File f = new File(getFilesDir() + "/"+programmeCode+".ser");
-                Date lastModified = new Date(f.lastModified());
-                Date currentDate = new Date(System.currentTimeMillis());
 
                 if (f.exists() == true && (System.currentTimeMillis() - f.lastModified()) / (1000*60*60*24) < 14 ){
-                    text = "Henter lagret timeplan..";
-                    Toast toast = Toast.makeText(context, text, duration);
+                    Toast toast = Toast.makeText(getApplicationContext(), "Henter lagret timeplan..", Toast.LENGTH_SHORT);
                     toast.show();
-                    programme = readFile(programmeCode);
+                    programme = readProgramme(programmeCode);
                 } else {
-                    text = "Lagrer timeplan..";
-                    Toast toast = Toast.makeText(context, text, duration);
-                    toast.show();
-                    PostData requestData = getSchedulePostData(programmeCode);
-                    programme = new Programme(programmeCode);
-                    programme.scrapeSchedule(requestData);
-                    saveFile(programme);
+                    try {
+                        if (new CheckNetworkTask().execute().get() == false) {
+                            Toast toast = Toast.makeText(getApplicationContext(),
+                                    "Sorry, dette programmet er ikke lagret, du må koble på internett eller velge et annet program", Toast.LENGTH_LONG);
+                            toast.show();
+                        } else {
+                            Toast toast = Toast.makeText(getApplicationContext(), "Lagrer timeplan..", Toast.LENGTH_SHORT);
+                            toast.show();
+                            PostData requestData = getSchedulePostData(programmeCode);
+                            programme = new Programme(programmeCode);
+                            programme.scrapeSchedule(requestData);
+                            saveProgramme(programme);
+                        }
+                    } catch(Exception ex) {
+                        Toast toast = Toast.makeText(getApplicationContext(), "Sorry, det skjedde noe galt", Toast.LENGTH_LONG);
+                        toast.show();
+                    }
                 }
 
-                Intent intent = new Intent(MainActivity.this, ScheduleActivity.class);
-                intent.putExtra("activeProgramme", programme);
-                try {
-                    startActivity(intent);
-                } catch (Exception ex) {
-                    System.out.print(ex.getMessage());
+                if(programme != null) {
+                    Intent intent = new Intent(MainActivity.this, ScheduleActivity.class);
+                    intent.putExtra("activeProgramme", programme);
+                    try {
+                        startActivity(intent);
+                    } catch (Exception ex) {
+                        System.out.print(ex.getMessage());
+                    }
                 }
             }
         });
@@ -170,7 +183,51 @@ public class MainActivity extends Activity implements View.OnClickListener {
         programmes.setSelection(mapIndex.get(selectedIndex.getText()));
     }
 
-    public void saveFile(Programme programme) {
+
+    public void saveProgrammeMap(HashMap<String, String> programmeMap) {
+        try{
+            //use buffering
+            OutputStream file = new FileOutputStream(getFilesDir() + "/programmeMap.ser");
+            OutputStream buffer = new BufferedOutputStream(file);
+            ObjectOutput output = new ObjectOutputStream(buffer);
+            try{
+                output.writeObject(programmeMap);
+            }
+            finally{
+                output.close();
+            }
+        }
+        catch(IOException ex){
+            System.out.println("saveProgrammeMap: " + ex.getMessage());
+        }
+    }
+
+    public HashMap<String, String> readProgrammeMap() {
+        HashMap<String, String> programmeMap = null;
+        try{
+            //use buffering
+            InputStream file = new FileInputStream(getFilesDir() + "/programmeMap.ser");
+            InputStream buffer = new BufferedInputStream(file);
+            ObjectInput input = new ObjectInputStream(buffer);
+            try{
+                //deserialize the List
+                programmeMap = (HashMap<String, String> )input.readObject();
+            }
+            finally{
+                input.close();
+            }
+        }
+        catch(ClassNotFoundException ex){
+            System.out.println("readProgrammeMap: " + ex.getMessage());
+        }
+        catch(IOException ex){
+            System.out.println("readProgrammeMap: " + ex.getMessage());
+        }
+        return programmeMap;
+    }
+
+
+    public void saveProgramme(Programme programme) {
         try{
             //use buffering
             OutputStream file = new FileOutputStream(getFilesDir() + "/"+ programme.getId() +".ser");
@@ -188,7 +245,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
         }
     }
 
-    public Programme readFile(String programmeCode) {
+
+    public Programme readProgramme(String programmeCode) {
         Programme programme = null;
         try{
             //use buffering
