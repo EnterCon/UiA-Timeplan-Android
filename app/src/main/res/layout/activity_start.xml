@@ -17,7 +17,7 @@
             app:rb_color="#C60C30"
             app:rb_radius="30dp"
             app:rb_rippleAmount="1"
-            app:rb_duration="5000"
+            app:rb_duration="1500"
             app:rb_scale="6">
 
                 <ImageView
@@ -36,14 +36,14 @@
         android:id="@+id/shimmer_view_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:duration="2500"
+        app:duration="750"
         android:layout_gravity="center"
         android:layout_marginTop="75dp">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="50dp"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="av EnterCon.no"
+            android:text="timeplan av EnterCon.no"
             android:id="@+id/textView"/>
     </com.facebook.shimmer.ShimmerFrameLayout>
 

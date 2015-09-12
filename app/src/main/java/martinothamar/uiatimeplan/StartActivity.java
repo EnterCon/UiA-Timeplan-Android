@@ -45,7 +45,7 @@ public class StartActivity extends Activity {
         rippleBackground.startRippleAnimation();
 
 
-        new CountDownTimer(5000, 1000) {
+        new CountDownTimer(1500, 1000) {
 
             public void onTick(long millisUntilFinished) {
             }
