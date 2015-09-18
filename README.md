@@ -4,6 +4,14 @@ Det er alltid et slit å scrolle gjennom lista på UiA's timeplan for å finne
 den linja jeg går på. Denne appen gjør det lettere på mobil og husker valget som har
 blitt gjort.
 
+
+<img src="https://raw.githubusercontent.com/EnterCon/UiA-Timeplan-Android/master/misc/SplashScreen.png" 
+height="350px" width="200px"/>
+<img src="https://raw.githubusercontent.com/EnterCon/UiA-Timeplan-Android/master/misc/List.png" 
+height="350px" width="200px"/>
+<img src="https://raw.githubusercontent.com/EnterCon/UiA-Timeplan-Android/master/misc/Schedule.png" 
+height="350px" width="200px"/>
+
 # Roadmap
 TBC
 
